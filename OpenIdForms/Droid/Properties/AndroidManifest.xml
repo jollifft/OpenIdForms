@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:versionCode="1" android:versionName="1.0" package="com.kbsmad.openidforms">
+	<uses-sdk android:minSdkVersion="15" />
+	<application android:label="OpenIdForms">
+		<!-- Callback from authentication screen -->
+		<activity android:name="net.openid.appauth.RedirectUriReceiverActivity" tools:node="replace">
+			<!-- Filter which captures custom scheme based redirects for Google authorization requests. -->
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="com.kbsmad.ssotest.mobilessotest" />
+			</intent-filter>
+		</activity>
+	</application>
+</manifest>
