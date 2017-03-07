@@ -4,8 +4,10 @@ using Android.App;
 using Android.Content;
 using Android.Graphics;
 using Android.Support.V4.Content;
+using Java.Lang;
 using OpenId.AppAuth;
 using OpenId.AppAuth.Browser;
+using Plugin.CurrentActivity;
 
 namespace OpenIdForms.Droid
 {
@@ -18,16 +20,9 @@ namespace OpenIdForms.Droid
 		private static string ClientId = "mobilessotest";
 		private static string RedirectUri = "com.kbsmad.ssotest.mobilessotest://oauth";
 
-		private static string EXTRA_AUTH_SERVICE_DISCOVERY = "authServiceDiscovery";
-
 		public OpenIdService()
 		{
-			//AppAuthConfiguration config = new AppAuthConfiguration.Builder()
-			//													.SetBrowserMatcher(new BrowserBlacklist(
-			//														VersionedBrowserMatcher.SamsungCustomTab, VersionedBrowserMatcher.FirefoxBrowser))
-			//													.Build();
-			//AuthService = new AuthorizationService(MainActivity.CurrentActivity, config);
-			//AuthState = new AuthState();
+			AuthState = new AuthState();
 
 		}
 
@@ -37,8 +32,8 @@ namespace OpenIdForms.Droid
 																.SetBrowserMatcher(new BrowserBlacklist(
 																	VersionedBrowserMatcher.SamsungCustomTab, VersionedBrowserMatcher.FirefoxBrowser))
 																.Build();
-			AuthService = new AuthorizationService(MainActivity.CurrentActivity, config);
-			AuthState = new AuthState();
+			AuthService = new AuthorizationService(CrossCurrentActivity.Current.Activity, config);
+			//AuthState = new AuthState();
 
 			AuthorizationServiceConfiguration serviceConfig = await AuthorizationServiceConfiguration.FetchFromUrlAsync(Android.Net.Uri.Parse(DiscoveryEndpoint));
 			string codeVerifier = "d129a4f8-c5c7-439d-b9c1-dd0349faba5cd129a4f8-c5c7-439d-b9c1-dd0349faba5c";
@@ -48,17 +43,16 @@ namespace OpenIdForms.Droid
 													  .SetCodeVerifier(codeVerifier, codeVerifier, "plain")
 													  .Build();
 
-			//MainActivity.CurrentActivity.MakeAuthRequest(AuthService, authRequest, serviceConfig);
-
 			AuthService.PerformAuthorizationRequest(
 				authRequest,
-				CreatePostAuthorizationIntent(MainActivity.CurrentActivity, authRequest, serviceConfig.DiscoveryDoc),
-				AuthService.CreateCustomTabsIntentBuilder().SetToolbarColor(Color.Green).Build());
+				CreatePostAuthorizationIntent(CrossCurrentActivity.Current.Activity, authRequest, serviceConfig.DiscoveryDoc),
+				AuthService.CreateCustomTabsIntentBuilder().SetToolbarColor(Color.ParseColor("#00a8e1")).Build());
 		}
 
-		public static PendingIntent CreatePostAuthorizationIntent(Context context, AuthorizationRequest request, AuthorizationServiceDiscovery discoveryDoc)
+		public PendingIntent CreatePostAuthorizationIntent(Context context, AuthorizationRequest request, AuthorizationServiceDiscovery discoveryDoc)
 		{
-			Intent intent = new Intent(context, typeof(MainActivity));
+			Intent intent = new Intent(context, typeof(RedirectActivity));
+			intent.PutExtra(Constants.EXTRA_AUTH_STATE, AuthState.JsonSerializeString());
 			if (discoveryDoc != null)
 			{
 				intent.PutExtra("authServiceDiscovery", discoveryDoc.DocJson.ToString());

@@ -42,11 +42,13 @@
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="Abstractions\IOpenIdService.cs" />
     <Compile Include="AppSetup.cs" />
+    <Compile Include="Helpers\Constants.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ViewModels\" />
     <Folder Include="Views\" />
     <Folder Include="Abstractions\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
