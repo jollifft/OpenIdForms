@@ -17,21 +17,7 @@ namespace OpenIdForms.iOS
 		// The OAuth redirect URI for the client kClientID.
 		public const string kRedirectURI = "com.kbsmad.ssotest.mobilessotest://oauth";
 
-		// NSCoding key for the authState property.
-		public static NSString kAppAuthExampleAuthStateKey = (NSString)"authState";
-
-		private AuthState _authState;
-		public AuthState AuthState
-		{
-			get { return _authState; }
-			set
-			{
-				if (_authState != value)
-				{
-					_authState = value;
-				}
-			}
-		}
+		public AuthState AuthState { get; set; }
 
 		public OpenIdService()
 		{
@@ -81,6 +67,29 @@ namespace OpenIdForms.iOS
 				Console.WriteLine($"Error retrieving discovery document: {ex}");
 				AuthState = null;
 			}
+		}
+
+		public bool DoTaskWithFreshTokens(Func<string, bool> work)
+		{
+			bool wasSuccessful = false;
+			AuthState.PerformWithFreshTokens((accessToken, idToken, error) => 
+			{
+				if (error != null)
+				{
+					Console.WriteLine($"Error fetching fresh tokens: {error.LocalizedDescription}");
+					return;
+				}
+
+				wasSuccessful = work(accessToken);
+			});
+
+			return wasSuccessful;
+		}
+
+		public void PerformTokenRequest(string authStateJson)
+		{
+			//iOS request the token automatically, no need to call this manual like we do in android
+			throw new NotImplementedException();
 		}
 	}
 }
