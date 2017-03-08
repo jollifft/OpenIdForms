@@ -10,7 +10,7 @@ namespace OpenIdForms
 		public MainViewModel()
 		{
 			LoginCommand = new Command(async () => await LaunchLoginView());
-			TestCommand = new Command(() => TestMethod());
+			TestCommand = new Command(async() => await TestMethod());
 		}
 
 		public ICommand LoginCommand
@@ -23,6 +23,20 @@ namespace OpenIdForms
 			get; private set;
 		}
 
+		private string _tokenText;
+		public string TokenText
+		{
+			get 
+			{
+				return _tokenText;
+			}
+			set 
+			{
+				_tokenText = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public async Task LaunchLoginView()
 		{
 			//await App.Current.MainPage.DisplayAlert("Action", "You clicked the button!", "cool");
@@ -30,7 +44,7 @@ namespace OpenIdForms
 
 		}
 
-		public void TestMethod()
+		public async Task TestMethod()
 		{
 			//App.OpenIdService.DoTaskWithFreshTokens((accessToken) => 
 			//{
@@ -44,7 +58,7 @@ namespace OpenIdForms
 			//	return false;
 			//});
 
-			//App.OpenIdService.DoTaskWithFreshTokens((accessToken) => MakeHttpCall(accessToken));
+			TokenText = await App.OpenIdService.GetActiveAccessToken();
 		}
 
 		//public bool MakeHttpCall(string accessToken)

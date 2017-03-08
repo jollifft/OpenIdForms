@@ -89,9 +89,23 @@ namespace OpenIdForms.Droid
 			AuthState.Update(tokenResponse, authException);
 		}
 
-		public bool DoTaskWithFreshTokens(Func<string, bool> work)
+		public async Task<string> GetActiveAccessToken()
 		{
-			return false;
+			if(AuthState.NeedsTokenRefresh)
+			{
+				try
+				{
+					TokenRequest request = AuthState.CreateTokenRefreshRequest();
+					TokenResponse response = await AuthService.PerformTokenRequestAsync(request);
+					AuthState.Update(response, null);
+				}
+				catch (System.Exception ex)
+				{
+					throw ex;
+				}
+			}
+
+			return AuthState.AccessToken;
 		}
 	}
 }

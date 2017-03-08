@@ -69,27 +69,36 @@ namespace OpenIdForms.iOS
 			}
 		}
 
-		public bool DoTaskWithFreshTokens(Func<string, bool> work)
-		{
-			bool wasSuccessful = false;
-			AuthState.PerformWithFreshTokens((accessToken, idToken, error) => 
-			{
-				if (error != null)
-				{
-					Console.WriteLine($"Error fetching fresh tokens: {error.LocalizedDescription}");
-					return;
-				}
-
-				wasSuccessful = work(accessToken);
-			});
-
-			return wasSuccessful;
-		}
-
 		public void PerformTokenRequest(string authStateJson)
 		{
 			//iOS request the token automatically, no need to call this manual like we do in android
 			throw new NotImplementedException();
+		}
+
+		public async Task<string> GetActiveAccessToken()
+		{
+			var expireTime = AuthState.LastTokenResponse.AccessTokenExpirationDate;
+
+			if (expireTime.Compare(NSDate.Now) != NSComparisonResult.Descending)
+			{
+				var tokenRequest = AuthState.TokenRefreshRequest();
+
+				try
+				{
+					var tokenResponse = await AuthorizationService.PerformTokenRequestAsync(tokenRequest);
+					Console.WriteLine($"Received token response with accessToken: {tokenResponse.AccessToken}");
+
+					AuthState.Update(tokenResponse, null);
+				}
+				catch (NSErrorException ex)
+				{
+					AuthState.Update(ex.Error);
+
+					Console.WriteLine($"Token exchange error: {ex}");
+					throw new Exception(ex.Message);
+				}
+			}
+			return AuthState.LastTokenResponse.AccessToken;
 		}
 	}
 }

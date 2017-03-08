@@ -3,5 +3,8 @@
 	<StackLayout>
 		<Label Text="OpenId Xam Forms POC" VerticalOptions="Start" HorizontalOptions="Center" FontSize="20"/>
 		<Button Text="login" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Command="{Binding LoginCommand}"/>
+		<Button Text="token" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Command="{Binding TestCommand}"/>
+		<Label Text="Token:" VerticalOptions="Start" HorizontalOptions="Center" FontSize="12"/>
+		<Label Text="{Binding TokenText}" VerticalOptions="Start" HorizontalOptions="Center" FontSize="12"/>
 	</StackLayout>
 </ContentPage>
